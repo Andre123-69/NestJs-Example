@@ -1,35 +1,31 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, HttpCode, NotFoundException } from "@nestjs/common";
+import { createTaskDto } from "./dto/create-task.dto.js";
 
 @Injectable()
 export class TasksService {
-    private tasks = [
-        {
-            id: 1,
-            title: "Task 1",
-            description: "Description 1",
-            status: "pending"
-        },
-        {
-            id: 2,
-            title: "Task 2",
-            description: "Description 2",
-            status: "completed"
-        }
-    ]
+    private tasks: any[] = []
 
     getAllTasks() {
         return this.tasks;
     }
 
-    createTask() {
-        const newTask = {
-            id: this.tasks.length + 1,
-            title: "New Task",
-            description: "Description New Task",
-            status: "pending"
+    getTask(id: number) {
+        const taksFound = this.tasks.find(task => task.id === id);
+
+        if (!taksFound) {
+            throw new NotFoundException(`Task with ID ${id} not found`);
         }
-        this.tasks.push(newTask);
-        return newTask;
+
+        return taksFound;
+    }
+
+    createTask(task: createTaskDto) {
+        console.log("Task service: ", task)
+        this.tasks.push({
+            ...task,
+            id: this.tasks.length + 1
+        });
+        return this.tasks;
     }
 
     updateTask() {
